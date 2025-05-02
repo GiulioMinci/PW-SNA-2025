@@ -1,0 +1,140 @@
+/* ============= FONT ============= */
+@font-face {
+  font-family: 'Titillium Web';
+  src: url('/static/fonts/TitilliumWeb-Regular.woff2') format('woff2');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Titillium Web';
+  src: url('/static/fonts/TitilliumWeb-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+}
+@font-face {
+  font-family: 'Titillium Web';
+  src: url('/static/fonts/TitilliumWeb-Bold.woff2') format('woff2');
+  font-weight: 700;
+}
+
+body {
+  font-family: 'Titillium Web', sans-serif;
+  background-color: #f0f2f5; /* Grigio chiarissimo */
+  color: #222; /* Testo scuro ma non nero */
+}
+
+/* ============= TITOLI ============= */
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+h4, h5, h6 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ============= CARD, NAV, FORMS ============= */
+.card {
+  background-color: #ffffff;
+  color: #222;
+  border: 1px solid #dee2e6;
+}
+
+.navbar,
+header.bg-primary,
+footer.bg-primary {
+  background-color: #003366 !important; /* Blu istituzionale scuro */
+}
+
+.form-control,
+.form-select {
+  background-color: #f8f9fa;
+  color: #212529;
+  border-color: #ced4da;
+}
+
+.form-control::placeholder {
+  color: #6c757d;
+}
+
+/* ============= PRE e ALERT ============= */
+pre.bg-light,
+.alert.alert-light {
+  background-color: #f8f9fa;
+  color: #212529;
+  border-color: #ced4da;
+}
+
+.alert-primary {
+  background-color: #cfe2ff;
+  border-color: #b6d4fe;
+  color: #084298;
+}
+
+.alert-secondary {
+  background-color: #e2e3e5;
+  border-color: #d3d6d8;
+  color: #41464b;
+}
+
+/* ============= BUTTONS ============= */
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+/* ============= LINKS ============= */
+a {
+  color: #0056b3;
+}
+a:hover {
+  color: #003366;
+  text-decoration: underline;
+}
+
+/* ============= IMMAGINI ============= */
+.card-img-top,
+.card img {
+  max-height: 300px;
+  object-fit: contain;
+}
+
+/* ============= PULSANTI DI PAGINAZIONE ============= */
+.page-link {
+  background-color: #f8f9fa;
+  color: #212529;
+  border-color: #ced4da;
+}
+.page-item.active .page-link {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+.page-link:hover {
+  background-color: #e2e6ea;
+}
+
+/* ============= BADGE ============= */
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.7em;
+}

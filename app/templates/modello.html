@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Modello ML e Clusterizzazione{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-robot" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Flusso di modellazione e analisi automatica</h1>
+</div>
+
+<!-- Descrizione generale -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <p>
+      In questa pagina è possibile avviare, monitorare e rieseguire l’intero processo di classificazione e clusterizzazione automatica delle homepage dei siti comunali italiani.
+      Il sistema implementa un modello supervisionato basato su <strong>Random Forest</strong> e una procedura di analisi esplorativa non supervisionata tramite <strong>DBSCAN</strong>.
+    </p>
+    <p>
+      Ogni fase è documentata e ripetibile, e fa uso di tecnologie quali <code>scikit-learn</code> per il machine learning, <code>Pillow</code> per l’elaborazione delle immagini, e
+      <code>sqlite3</code> come archivio centrale dei dati. Le immagini sono preprocessate in <strong>64x64 RGB</strong>, normalizzate e appiattite in vettori da <code>12288</code> feature ciascuna.
+    </p>
+  </div>
+</div>
+
+<!-- Sezione 1: Sincronizza -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-light fw-bold">🔄 Sincronizzazione</div>
+  <div class="card-body">
+    <p>
+      Questa operazione confronta i file di immagine presenti nella directory <code>data/raw/screenshots/</code> con le informazioni nel database.
+      Per ogni immagine non ancora registrata, viene creato un record nella tabella <code>immagini</code> con path relativo e metadati iniziali.
+      È una fase fondamentale per garantire che tutte le homepage siano visibili e disponibili per la classificazione o il clustering.
+    </p>
+    <form method="post">
+      <button name="sync" class="btn btn-outline-secondary">🔄 Esegui sincronizzazione</button>
+    </form>
+  </div>
+</div>
+
+<!-- Sezione 2: Addestramento -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-light fw-bold">🏋️ Addestramento supervisato (Random Forest)</div>
+  <div class="card-body">
+    <p>
+      Utilizzando le immagini etichettate manualmente tramite l’interfaccia web, questa fase costruisce un modello di classificazione supervisionato.
+      Le immagini vengono convertite in vettori numerici, e l’algoritmo <strong>RandomForestClassifier</strong> (con <code>n_estimators=100</code> e <code>random_state=42</code>)
+      viene addestrato per distinguere tra le diverse categorie visive (es. Design System, Burger Menu, Search Bar).
+    </p>
+    <p>
+      Al termine, il modello viene salvato in <code>app/ml/model.pkl</code> e il report completo in <code>app/ml/training_report.txt</code>.
+    </p>
+    <form method="post">
+      <button name="train" class="btn btn-primary">🏋️ Addestra modello</button>
+    </form>
+  </div>
+</div>
+
+<!-- Sezione 3: Predizione -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-light fw-bold">🔎 Predizione sulle immagini non etichettate</div>
+  <div class="card-body">
+    <p>
+      In questa fase il modello addestrato viene caricato da disco e applicato a tutte le immagini presenti nel database che non hanno ancora una etichetta.
+      Per ciascuna immagine viene calcolata la classe più probabile (etichetta predetta) e il relativo punteggio di confidenza.
+    </p>
+    <p>
+      I risultati vengono memorizzati direttamente nel database, nei campi <code>etichetta_modello</code>, <code>confidence</code> e
+      <code>etichetta_modello_originale</code> (quest’ultima solo alla prima predizione, per auditabilità).
+    </p>
+    <form method="post">
+      <button name="predict" class="btn btn-success">🔎 Esegui predizione</button>
+    </form>
+  </div>
+</div>
+
+<!-- Sezione 4: Clusterizzazione non supervisionata -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-light fw-bold">🧩 Clusterizzazione non supervisionata (DBSCAN)</div>
+  <div class="card-body">
+    <p>
+      Questa operazione esegue un’analisi esplorativa dei dati visivi tramite l’algoritmo <strong>DBSCAN</strong>, che permette di raggruppare automaticamente
+      immagini simili in cluster senza richiedere alcuna etichetta. Le immagini vengono rappresentate tramite vettori di pixel normalizzati (12288 dimensioni),
+      gli stessi utilizzati per il modello supervisato.
+    </p>
+    <p>
+      Il clustering assegna a ciascuna immagine un valore <code>cluster_dbscan</code> e un indicatore <code>is_outlier</code> se l'immagine è considerata rumore.
+      I risultati sono visualizzabili nella pagina <strong>“Cluster non supervisionati”</strong>, dove ogni gruppo è rappresentato da un campione di 20-30 immagini.
+    </p>
+    <form method="post">
+      <button name="clusterizza_unsupervised" class="btn btn-outline-dark">🧩 Avvia clusterizzazione DBSCAN</button>
+    </form>
+  </div>
+</div>
+
+<!-- Risultati -->
+{% if status_message %}
+<div class="alert alert-info mt-4"><strong>{{ status_message }}</strong></div>
+{% endif %}
+
+{% if error_text %}
+<div class="alert alert-danger mt-3">
+  <pre class="mb-0">{{ error_text }}</pre>
+</div>
+{% endif %}
+
+{% if output_text %}
+<div class="card shadow-sm mt-4">
+  <div class="card-body">
+    <pre class="mb-0">{{ output_text }}</pre>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

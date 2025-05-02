@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Conformità SIFT{% endblock %}
+
+{% block content %}
+<h1>🔍 Verifica Conformità con SIFT</h1>
+
+<form method="post" class="mb-4 d-flex flex-wrap gap-3 align-items-end">
+    <div>
+        <label for="etichetta">Etichetta di riferimento:</label>
+        <select name="etichetta" class="form-select" required>
+            <option value="">-- Seleziona etichetta --</option>
+            {% for e in etichette %}
+                <option value="{{ e }}" {% if e == selezionata %}selected{% endif %}>{{ e }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="threshold">Threshold (soglia match):</label>
+        <input type="number" name="threshold" class="form-control" value="{{ threshold }}" min="1" max="100" required>
+    </div>
+
+    <div>
+        <label for="limit">Limite immagini:</label>
+        <select name="limit" class="form-select">
+            <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+            <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
+            <option value="1000" {% if limit == 1000 %}selected{% endif %}>1000</option>
+            <option value="9999999" {% if limit > 1000 %}selected{% endif %}>Tutte</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Esegui confronto</button>
+</form>
+
+{% if risultati %}
+<h2>📊 Risultati</h2>
+<table class="table table-bordered table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Comune</th>
+            <th>Conforme</th>
+            <th># Match</th>
+            <th>Screenshot</th>
+            <th>Template usato</th>
+            <th>Etichetta rif.</th>
+            <th>Threshold</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in risultati %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td class="{% if r[3] %}text-success fw-bold{% else %}text-danger fw-bold{% endif %}">{{ 'Sì' if r[3] else 'No' }}</td>
+            <td>{{ r[4] }}</td>
+            <td>
+                <img src="{{ url_for('static', filename='screenshots/' + r[2].split('/')[-1].split('\\\\')[-1]) }}"
+                     class="img-thumbnail" style="max-height: 150px;">
+            </td>
+            <td>
+                <img src="{{ url_for('static', filename='screenshots/' + r[5].split('/')[-1].split('\\\\')[-1]) }}"
+                     class="img-thumbnail" style="max-height: 150px;">
+            </td>
+            <td>{{ r[6] }}</td>
+            <td>{{ r[7] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

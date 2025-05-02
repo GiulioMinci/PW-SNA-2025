@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-palette-fill" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Comune a chi</h1>
+</div>
+
+<!-- Intro -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <p class="lead mb-0">
+      Benvenuto nella webapp comune a chi! Questa App è stata sviluppata come Project Work da Giulio Minci,  Marco Bartocci e Valeria Palazzari. <br> Diploma di esperto in Data science (2024.197.002)  🎨  
+      <br>Naviga tra le funzionalità disponibili per etichettare, validare e gestire i dati.
+    </p>
+  </div>
+</div>
+
+<!-- Funzionalità -->
+<div class="row row-cols-1 row-cols-md-2 g-4">
+
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">📝 Etichetta</h5>
+        <p class="card-text">Assegna manualmente etichette alle immagini degli header.</p>
+        <a href="{{ url_for('main.classifica') }}" class="btn btn-primary">Vai a Etichetta</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🤖 Modello</h5>
+        <p class="card-text">Sincronizza, addestra e predici automaticamente le immagini.</p>
+        <a href="{{ url_for('main.modello') }}" class="btn btn-primary">Vai a Modello</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">✅ Validazione</h5>
+        <p class="card-text">Conferma o correggi le predizioni del modello.</p>
+        <a href="{{ url_for('main.validazione') }}" class="btn btn-primary">Vai a Validazione</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">📊 Dashboard</h5>
+        <p class="card-text">Visualizza il riepilogo delle etichette con anteprime immagini.</p>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Vai a Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🏷️ Etichette</h5>
+        <p class="card-text">Aggiungi o modifica le categorie disponibili.</p>
+        <a href="{{ url_for('main.scraping') }}" class="btn btn-primary">Vai a Etichette</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">💾 SQL</h5>
+        <p class="card-text">Esegui query sul database e gestisci i dati.</p>
+        <a href="{{ url_for('main.sqladmin') }}" class="btn btn-primary">Vai a SQL Admin</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

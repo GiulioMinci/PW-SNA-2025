@@ -1,0 +1,37 @@
+<header class="bg-primary py-3">
+  <div class="container d-flex justify-content-between align-items-start text-white">
+
+    <!-- Colonna sinistra: logo sopra, titolo sotto -->
+    <div class="d-flex flex-column align-items-start">
+      <img src="{{ url_for('static', filename='img/logo_sna.png') }}" alt="Logo Comune a chi" style="height: 1.5rem;">
+      <span class="fs-5 fw-bold mt-3">Comune a chi?</span>
+    </div>
+
+    <!-- Colonna destra: sottotitolo -->
+    <div class="text-end small fst-italic ms-3" style="max-width: 600px;">
+      WebApp per l’Analisi della Conformità dei Siti Web Comunali<br>
+      agli Standard del Design System .Italia attraverso image recognition,<br>
+      machine learning e matching deterministico
+    </div>
+
+  </div>
+
+  <!-- Menù di navigazione -->
+  <div class="container mt-3">
+    <nav>
+      <ul class="nav flex-wrap justify-content-start">
+        <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link text-white">🏠 Home</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.sqladmin') }}" class="nav-link text-white">💾 SQL</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.scraping') }}" class="nav-link text-white">🖼️ Scraping</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.classifica') }}" class="nav-link text-white">📝 Crea Etichette</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.clusterizza') }}" class="nav-link text-white">🔍 Clusters non supervisionati</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.dashboard') }}" class="nav-link text-white">📊 Immagini confermate</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.modello') }}" class="nav-link text-white">🤖 Modello</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.validazione') }}" class="nav-link text-white">✅ Validazione</a></li>
+        <li class="nav-item">
+          <a href="{{ url_for('main.bi') }}" class="nav-link text-white">🗺️ BI</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>

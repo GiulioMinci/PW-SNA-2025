@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Business Intelligence{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-map-fill"></i> Distribuzione geografica</h1>
+
+<form method="POST" action="{{ url_for('main.bi_livello', livello='regioni') }}" id="biForm" class="row g-3">
+  <div class="col-md-6">
+    <label for="etichetta" class="form-label">Etichetta</label>
+    <select id="etichetta" name="etichetta" class="form-select" required>
+      <option value="design system">design system</option>
+      <option value="search bar a destra">search bar a destra</option>
+      <option value="burger menu">burger menu</option>
+      <option value="altro">Altro</option>
+    </select>
+  </div>
+
+  <div class="col-md-6">
+    <label for="livello" class="form-label">Livello</label>
+    <select id="livello" name="livello" class="form-select" required>
+      <option value="comuni">Comuni</option>
+      <option value="province">Province</option>
+      <option value="regioni" selected>Regioni</option>
+    </select>
+  </div>
+
+  <div class="col-12">
+    <button type="submit" name="azione" value="genera" class="btn btn-primary">Genera mappa</button>
+    <button type="submit" name="azione" value="seleziona" class="btn btn-outline-secondary">Seleziona mappa esistente</button>
+  </div>
+</form>
+
+<hr class="my-4" />
+
+<div id="mappaRisultato">
+  <!-- Qui comparirà il testo + iframe restituito da Flask -->
+</div>
+
+<script>
+document.getElementById("biForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const livello = formData.get("livello");
+
+  fetch(`/bi/livello/${livello}`, {
+    method: "POST",
+    body: formData,
+  })
+  .then((response) => {
+    if (!response.ok) throw new Error("Errore durante la generazione");
+    return response.text();
+  })
+  .then((html) => {
+    document.getElementById("mappaRisultato").innerHTML = html;
+  })
+  .catch((err) => alert(err));
+});
+</script>
+{% endblock %}

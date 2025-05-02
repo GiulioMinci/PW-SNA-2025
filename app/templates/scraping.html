@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Scraping Comuni{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-globe2" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Scraping Comuni</h1>
+</div>
+
+<!-- Form di ricerca -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-2 align-items-center">
+      <div class="col-md-6">
+        <input type="text" name="search" placeholder="Cerca per nome o sito..." value="{{ search_query }}" class="form-control">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">
+          🔍 Cerca
+        </button>
+      </div>
+      <div class="col-auto">
+        <a href="{{ url_for('main.scraping') }}" class="btn btn-outline-secondary">
+          ↺ Reset
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modifica URL -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="POST">
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Nome Comune</th>
+              <th>Sito Web</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for nome, url in comuni %}
+            <tr>
+              <td style="white-space: nowrap;">{{ nome }}</td>
+              <td>
+                <input type="text" name="url_{{ nome }}" value="{{ url }}" class="form-control">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <button class="btn btn-success mt-3" type="submit" name="update_urls">
+        💾 Salva Modifiche
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Avvio Scraping -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="POST">
+      <div class="mb-3">
+        <label for="scrape_limit" class="form-label">📦 Quanti comuni vuoi scrappare?</label>
+        <select name="scrape_limit" id="scrape_limit" class="form-select w-auto d-inline-block">
+          <option value="100">100</option>
+          <option value="1000">1000</option>
+          <option value="999999">Tutti</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit" name="start_scraping">
+        ▶️ Avvia Screenshot
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Navigazione pagine -->
+<!-- Navigazione pagine -->
+<nav aria-label="Navigazione pagine" class="mt-4">
+  <div style="overflow-x: auto;">
+    <ul class="pagination justify-content-center flex-nowrap">
+
+      {% if page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.scraping', page=page-1, search=search_query) }}">←</a>
+      </li>
+      {% endif %}
+
+      {% if page > 3 %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.scraping', page=1, search=search_query) }}">1</a>
+      </li>
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      {% endif %}
+
+      {# Mostra 2 pagine prima, corrente e 2 dopo #}
+      {% for p in range(page-2, page+3) %}
+        {% if p > 0 and p <= total_pages %}
+          {% if p == page %}
+            <li class="page-item active" aria-current="page">
+              <span class="page-link">{{ p }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('main.scraping', page=p, search=search_query) }}">{{ p }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% if page < total_pages - 2 %}
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.scraping', page=total_pages, search=search_query) }}">{{ total_pages }}</a>
+      </li>
+      {% endif %}
+
+      {% if page < total_pages %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.scraping', page=page+1, search=search_query) }}">→</a>
+      </li>
+      {% endif %}
+
+    </ul>
+  </div>
+</nav>
+
+
+{% endblock %}
