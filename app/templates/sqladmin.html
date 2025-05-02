@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}SQL Admin{% endblock %}
+
+{% block content %}
+
+<!-- TITOLO -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-tools" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">SQL Admin</h1>
+</div>
+
+<!-- FORM COMANDI RAPIDI -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="post" class="mb-0">
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <button name="sql_query" value="SELECT * FROM immagini" class="btn btn-outline-primary">
+          🖼️ Vedi immagini
+        </button>
+        <button name="sql_query" value="SELECT * FROM etichette" class="btn btn-outline-secondary">
+          🏷️ Vedi etichette
+        </button>
+        <button name="sql_query" value="SELECT name FROM sqlite_master WHERE type='table'" class="btn btn-outline-info">
+          📋 Mostra tabelle
+        </button>
+      </div>
+
+      <div class="mb-3">
+        <label for="sql_query" class="form-label fw-bold">Query SQL personalizzata</label>
+        <textarea id="sql_query" name="sql_query" class="form-control" rows="5" placeholder="Scrivi qui la tua query SQL...">{{ sql }}</textarea>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-primary">
+          ⚙️ Esegui
+        </button>
+        <a href="{{ url_for('main.export_csv') }}" class="btn btn-success">
+          ⬇️ Esporta risultati in CSV
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ERRORE -->
+{% if error %}
+<div class="alert alert-danger mt-3" role="alert">
+  ❌ Errore: {{ error }}
+</div>
+{% endif %}
+
+<!-- RISULTATI -->
+{% if columns %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h5 class="card-title mb-3">📊 Risultati</h5>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered table-sm align-middle">
+        <thead class="table-light">
+          <tr>
+            {% for col in columns %}
+              <th scope="col">{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in result %}
+            <tr>
+              {% for cell in row %}
+                <td>{{ cell }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

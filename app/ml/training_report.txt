@@ -1,0 +1,12 @@
+Accuracy: 1.0000
+
+                     precision    recall  f1-score   support
+
+              Altro       1.00      1.00      1.00        17
+        burger menu       1.00      1.00      1.00        21
+      design system       1.00      1.00      1.00        79
+search bar a destra       1.00      1.00      1.00        26
+
+           accuracy                           1.00       143
+          macro avg       1.00      1.00      1.00       143
+       weighted avg       1.00      1.00      1.00       143

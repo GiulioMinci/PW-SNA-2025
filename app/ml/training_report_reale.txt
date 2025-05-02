@@ -1,0 +1,12 @@
+Accuracy (su immagini validate): 0.7527
+
+                     precision    recall  f1-score   support
+
+              Altro       0.64      0.84      0.73        19
+        burger menu       0.74      0.70      0.72        20
+      design system       0.79      0.79      0.79        24
+search bar a destra       0.84      0.70      0.76        30
+
+           accuracy                           0.75        93
+          macro avg       0.75      0.76      0.75        93
+       weighted avg       0.76      0.75      0.75        93

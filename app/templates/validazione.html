@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block title %}Validazione{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-patch-check-fill" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Validazione Predizioni</h1>
+</div>
+
+<!-- Filtro per Etichetta (spostato sopra immagini) -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="container-fluid">
+      <div class="row align-items-end">
+        <div class="col-md-6">
+          <label for="label_filter" class="form-label">🎯 Filtra per Etichetta</label>
+          <select id="label_filter" name="label_filter" class="form-select form-select-sm bg-light">
+            <option value="">Tutte le etichette</option>
+            {% for e in etichette %}
+              <option value="{{ e }}" {% if e == label_filter %}selected{% endif %}>{{ e }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-sm btn-outline-primary mt-2 w-100">🔍 Filtra</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Threshold -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="post" class="container-fluid">
+      <div class="row mb-3 align-items-end">
+        <div class="col-md-6">
+          <label for="new_threshold" class="form-label">🔧 Threshold SIFT</label>
+          <input type="number" class="form-control form-control-sm" id="new_threshold" name="new_threshold" min="0" placeholder="es. 250" required>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" name="set_threshold" class="btn btn-sm btn-primary mt-2 w-100">⚡ Applica</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Valutazione Modelli -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h5 class="mb-4">📊 Valutazione Modelli di Classificazione</h5>
+
+    <div class="alert alert-light small">
+      In questa sezione puoi confrontare l’efficacia del modello supervisionato <strong>Random Forest</strong> rispetto al metodo deterministico <strong>SIFT</strong> per classificare automaticamente le homepage dei siti comunali.<br>
+      Le metriche sono calcolate esclusivamente sulle immagini validate manualmente (confermate o corrette).
+    </div>
+
+    <div class="row g-2 mb-4">
+      <div class="col-md-4">
+        <form method="post">
+          <button type="submit" name="valuta_modello" class="btn btn-outline-primary w-100 btn-sm">
+            🧠 Valuta Random Forest
+          </button>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <form method="post">
+          <button type="submit" name="valuta_sift" class="btn btn-outline-secondary w-100 btn-sm">
+            🔍 Valuta SIFT
+          </button>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <form method="post">
+          <button type="submit" name="confronta_modelli" class="btn btn-outline-success w-100 btn-sm">
+            📊 Confronta Modelli
+          </button>
+        </form>
+      </div>
+    </div>
+
+    {% if accuracy_modello %}
+    <div class="alert alert-primary small">
+      ✅ <strong>Accuracy Random Forest:</strong> {{ "%.2f"|format(accuracy_modello*100) }}%<br>
+      Percentuale di etichette previste correttamente rispetto a quelle confermate o corrette manualmente.
+    </div>
+    {% endif %}
+
+    {% if report_modello %}
+    <div class="mt-3">
+      <h6>📄 Report di classificazione - Random Forest</h6>
+      <p class="text-muted small">
+        Include Precision (accuratezza delle predizioni), Recall (capacità di identificare tutte le istanze corrette), F1-score (bilanciamento tra precision e recall), e Support (numero di esempi per classe).<br>
+        Generato usando <code>classification_report</code> di <code>scikit-learn</code>.
+      </p>
+      <pre class="bg-light p-3 rounded small">{{ report_modello }}</pre>
+    </div>
+    {% endif %}
+
+    {% if accuracy_sift %}
+    <div class="alert alert-secondary small mt-4">
+      🔍 <strong>Accuracy SIFT:</strong> {{ "%.2f"|format(accuracy_sift*100) }}%<br>
+      Calcolata confrontando <code>conforme_sift</code> con l’etichetta "design system" assegnata manualmente.
+    </div>
+    {% endif %}
+
+    {% if grafico_confronto_path %}
+    <div class="mt-4">
+      <h6>📈 Grafici di confronto tra modelli</h6>
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for path in grafico_confronto_path %}
+        <div class="col d-flex">
+          <div class="card flex-fill shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Grafico {{ loop.index }}</h5>
+              <a href="{{ url_for('static', filename=path) }}" target="_blank">
+                <img src="{{ url_for('static', filename=path) }}" class="img-fluid rounded mb-3" alt="Grafico {{ loop.index }}">
+              </a>
+              <p class="text-muted small mb-0">
+                {% if loop.index == 1 %}
+                  <strong>Accuracy comparata:</strong> percentuale di predizioni corrette totali per Random Forest e SIFT.
+                {% elif loop.index == 2 %}
+                  <strong>Confusion Matrix RF:</strong> mostra predizioni corrette (diagonale) ed errori sistematici tra classi.
+                {% elif loop.index == 3 %}
+                  <strong>Metriche per classe:</strong> precision, recall, F1 per ogni etichetta.
+                {% elif loop.index == 4 %}
+                  <strong>Confusion Matrix binaria SIFT:</strong> verifica concordanza SIFT/manuale per "design system".
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Lista Immagini -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h5 class="mb-4">🖼️ Immagini da Validare</h5>
+    {% if immagini %}
+      {% for img in immagini %}
+        <div class="border rounded p-3 mb-3">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ url_for('static', filename='screenshots/' + img[1]) }}" target="_blank">
+              <img src="{{ url_for('static', filename='screenshots/' + img[1]) }}" class="border rounded" style="height: 60px;">
+            </a>
+            <div>
+              <h5 class="mb-1">{{ img[1] }}</h5>
+              <p class="mb-1">
+                <strong>Etichetta proposta:</strong> <em>{{ img[3] }}</em><br>
+                🔍 <strong>Confidence:</strong> <code>{{ "%.2f"|format(img[4]*100) }}%</code><br>
+                🧪 <strong>Conforme SIFT:</strong>
+                {% if img[5] == 1 %}<span class="badge bg-success">Sì</span>
+                {% elif img[5] == 0 %}<span class="badge bg-danger">No</span>
+                {% else %}<span class="badge bg-secondary">-</span>{% endif %}
+                {% if img[6] %}<small class="text-muted">(threshold {{ img[6] }})</small>{% endif %}
+                {% if img[7] is not none %}<br>🎯 <strong>Match trovati:</strong> {{ img[7] }}{% endif %}
+              </p>
+            </div>
+          </div>
+          <form method="post" class="d-flex flex-wrap gap-2">
+            <input type="hidden" name="image_id" value="{{ img[0] }}">
+            <select name="new_label" class="form-select flex-grow-1">
+              <option value="{{ img[3] }}" selected>{{ img[3] }} (proposta)</option>
+              {% for e in etichette %}
+                {% if e != img[3] %}<option value="{{ e }}">{{ e }}</option>{% endif %}
+              {% endfor %}
+            </select>
+            <button type="submit" name="conferma_o_cambia" class="btn btn-primary">✅ Salva</button>
+          </form>
+          <p class="text-muted small mt-2">
+            Premi "Salva" per confermare l’etichetta proposta o selezionane un’altra per correggerla. Se la selezione corrisponde a quella proposta, verrà considerata confermata; altrimenti verrà salvata come correzione.
+            In caso di correzione, lo stato dell’immagine sarà impostato su <code>corretto</code>; se confermata, sarà impostato su <code>confermato</code>. Questa distinzione è utile per valutare le performance del modello.
+          </p>
+        </div>
+      {% endfor %}
+
+      <nav aria-label="Navigazione pagine">
+        <ul class="pagination justify-content-center">
+          {% if page > 1 %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('main.validazione', page=page-1, label_filter=label_filter) }}">← Precedente</a>
+            </li>
+          {% endif %}
+          <li class="page-item disabled">
+            <span class="page-link">Pagina {{ page }} di {{ total_pages }}</span>
+          </li>
+          {% if page < total_pages %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('main.validazione', page=page+1, label_filter=label_filter) }}">Successiva →</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+
+    {% else %}
+      <div class="alert alert-info">
+        {% if label_filter %}
+          ⚠️ Nessuna immagine da validare con etichetta <strong>{{ label_filter }}</strong>.
+        {% else %}
+          ✅ Nessuna immagine da validare.
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

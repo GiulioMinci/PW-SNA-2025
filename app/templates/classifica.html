@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Etichettatura Immagini{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-images" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Etichettatura Immagini</h1>
+</div>
+
+<!-- Etichettatura immagine -->
+{% if immagine %}
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="POST" class="row g-3">
+
+      <div class="col-12">
+        <label class="form-label fw-bold">Annotatore</label>
+        <input type="text" name="annotatore" class="form-control" value="{{ annotatore }}" required>
+      </div>
+
+      <div class="col-12 text-center">
+        <img src="{{ url_for('static', filename='screenshots/' + immagine) }}" class="img-fluid border rounded my-3" style="max-height: 400px;">
+      </div>
+
+      <input type="hidden" name="nome_file" value="{{ immagine }}">
+
+      <div class="col-12">
+        <label for="etichetta" class="form-label fw-bold">Etichetta</label>
+        <select name="etichetta" id="etichetta" class="form-select" required>
+          {% for id, nome, descrizione in etichette %}
+            <option value="{{ nome }}">{{ nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">
+          💾 Salva etichetta
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+  ✅ Tutte le immagini sono state etichettate.
+</div>
+{% endif %}
+
+<!-- Aggiungi nuova etichetta -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h4 class="mb-3">➕ Aggiungi una nuova etichetta</h4>
+    <form method="POST" class="row g-2">
+      <div class="col-md-6">
+        <input type="text" name="nuova_etichetta" class="form-control" placeholder="Nome etichetta" required>
+      </div>
+      <div class="col-md-6">
+        <input type="text" name="descrizione" class="form-control" placeholder="Descrizione (facoltativa)">
+      </div>
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          ➕ Aggiungi etichetta
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modifica etichette esistenti -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h4 class="mb-3">✏️ Modifica etichette esistenti</h4>
+    <form method="POST" class="row g-3">
+      {% for id, nome, descrizione in etichette %}
+      <div class="col-12">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-4">
+            <input type="hidden" name="id" value="{{ id }}">
+            <input type="text" class="form-control" name="nome_mod" value="{{ nome }}" required>
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" name="descrizione_mod" value="{{ descrizione or '' }}" placeholder="Descrizione (facoltativa)">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" name="rinomina" class="btn btn-outline-primary w-100">💾 Salva</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </form>
+  </div>
+</div>
+
+<!-- Modifica colori etichette -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h4 class="mb-3">🎨 Modifica colori etichette</h4>
+    <form method="POST" class="row g-3">
+      {% for id, nome, descrizione in etichette %}
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <label class="fw-bold" style="min-width: 120px;">{{ nome }}</label>
+        <input type="color" name="colore_{{ nome }}" class="form-control form-control-color" value="{{ colori.get(nome, '#cccccc') }}" title="Colore per {{ nome }}">
+      </div>
+      {% endfor %}
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" name="salva_colori" class="btn btn-success">
+          🎨 Salva tutti i colori
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

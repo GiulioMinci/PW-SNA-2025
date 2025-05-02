@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Etichette{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-bar-chart-line-fill" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Dashboard Classificazione</h1>
+</div>
+
+<!-- Statistiche riassuntive -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-dark shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title">📦 Totale immagini</h6>
+        <p class="card-text fs-4">{{ totale }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-success shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title">✅ % Confermate</h6>
+        <p class="card-text fs-4">{{ perc_confermate }}%</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-warning shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title">✏️ % Smentite</h6>
+        <p class="card-text fs-4">{{ perc_corretta }}%</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-info shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title">👁️ % Viste dall’utente</h6>
+        <p class="card-text fs-4">{{ perc_viste }}%</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grid delle etichette -->
+<div class="row row-cols-1 row-cols-md-2 g-4">
+  {% for etichetta, immagini in immagini_per_etichetta.items() %}
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      <div class="card-header bg-primary text-white fw-bold">
+        🏷️ {{ etichetta }} <span class="badge bg-light text-primary ms-2">{{ immagini|length }}</span>
+      </div>
+      <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+        {% if immagini %}
+          <div class="d-flex flex-wrap gap-2">
+            {% for img in immagini %}
+              <img src="{{ url_for('static', filename='screenshots/' + img) }}"
+                   class="rounded border"
+                   style="height: 60px; width: auto;">
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">Nessuna immagine disponibile.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

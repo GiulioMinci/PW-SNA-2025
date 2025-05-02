@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Clusterizzazione non supervisionata{% endblock %}
+
+{% block content %}
+
+<!-- Titolo -->
+<div class="d-flex align-items-center mb-4">
+  <i class="bi bi-diagram-3" style="font-size: 2rem;"></i>
+  <h1 class="ms-2 mb-0">Clusterizzazione Non Supervisionata</h1>
+</div>
+
+<!-- Descrizione -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <p>
+        In questa sezione viene eseguita una <strong>clusterizzazione non supervisionata</strong> delle homepage raccolte, 
+        mediante l’algoritmo <code>DBSCAN</code> (<em>Density-Based Spatial Clustering of Applications with Noise</em>). 
+        L’algoritmo analizza gli <strong>embedding ResNet101</strong> associati a ciascuna immagine — cioè rappresentazioni numeriche 
+        vettoriali che catturano le caratteristiche visive e semantiche profonde del layout.
+      </p>
+  
+      <p>
+        A differenza di altri algoritmi come <code>k-means</code>, <code>DBSCAN</code> non richiede di specificare a priori 
+        il numero di cluster da cercare. Si basa invece sulla nozione di densità e si configura con due soli parametri fondamentali:
+      </p>
+  
+      <ul>
+        <li>
+          <strong><code>eps</code></strong> (epsilon): indica la <u>distanza massima</u> tra due punti per considerarli “vicini”. 
+          Più alto è questo valore, maggiore sarà la tolleranza visiva e più grande sarà la probabilità che elementi diversi 
+          vengano raggruppati insieme.
+        </li>
+        <li>
+          <strong><code>min_samples</code></strong>: rappresenta il <u>numero minimo di punti</u> vicini richiesti per formare un cluster. 
+          Valori più bassi tendono a generare molti cluster piccoli, mentre valori più alti richiedono strutture molto simili 
+          tra loro per essere raggruppate.
+        </li>
+      </ul>
+  
+      <p>
+        I punti che non rientrano in alcun cluster coerente, perché troppo distanti da altri o troppo isolati, 
+        vengono identificati come <strong>outlier</strong> (etichettati con <code>-1</code>). Questi rappresentano spesso:
+        <ul>
+          <li>⚠️ Siti web con layout completamente diversi o non standard</li>
+          <li>🧪 Homepage vuote o bianche (es. errore nel caricamento)</li>
+          <li>🚫 Immagini non raggiungibili o contenuti non caricati correttamente</li>
+        </ul>
+      </p>
+  
+      <p>
+        Oltre a fornire una <strong>visione strutturale</strong> dell’intero dataset, il clustering ha svolto un ruolo essenziale anche 
+        nella <strong>costruzione delle etichette</strong> poi utilizzate per addestrare il modello di classificazione supervisionata: 
+        i gruppi principali identificati da DBSCAN sono stati convertiti in categorie coerenti come 
+        <code>design system</code>, <code>burger menu</code> e <code>search bar</code>, dando origine a una tassonomia oggettiva, 
+        derivata direttamente dai dati.
+      </p>
+  
+      <p class="mb-0">
+        Puoi regolare i parametri <strong><code>eps</code></strong> e <strong><code>min_samples</code></strong> per esplorare 
+        il dataset in modo più o meno permissivo, a seconda del livello di granularità desiderato: valori più permissivi (eps alto) 
+        produrranno cluster più grandi e generici, mentre valori restrittivi consentono di evidenziare anomalie e strutture fuori standard.
+      </p>
+
+    <!-- Form parametri -->
+    <form method="post" class="row g-3 align-items-end">
+      <div class="col-auto">
+        <label for="eps" class="form-label mb-0">🔍 eps</label>
+        <input type="number" step="0.1" name="eps" id="eps" class="form-control" value="{{ eps }}">
+      </div>
+      <div class="col-auto">
+        <label for="min_samples" class="form-label mb-0">📊 min_samples</label>
+        <input type="number" name="min_samples" id="min_samples" class="form-control" value="{{ min_samples }}">
+      </div>
+      <div class="col-auto">
+        <button type="submit" name="clusterizza_unsupervised" class="btn btn-outline-dark">
+          🧩 Rigenera Cluster
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Statistiche -->
+<div class="alert alert-secondary mb-4">
+  <strong>📈 Risultati attuali:</strong>
+  <ul class="mb-0">
+    <li><strong>Parametri:</strong> <code>eps = {{ eps }}</code>, <code>min_samples = {{ min_samples }}</code></li>
+    <li><strong>Cluster trovati:</strong> {{ num_cluster }}</li>
+    <li><strong>Outlier rilevati:</strong> {{ num_outliers }}</li>
+  </ul>
+</div>
+
+<!-- Eventuali messaggi -->
+{% if output %}
+  <div class="alert alert-success">{{ output }}</div>
+{% endif %}
+{% if errore %}
+  <div class="alert alert-danger">{{ errore }}</div>
+{% endif %}
+
+<!-- Visualizzazione Cluster -->
+{% if cluster_samples %}
+  {% for cluster_id, immagini, totale in cluster_samples %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title">
+          🧪 Cluster <code>#{{ cluster_id }}</code> – <strong>{{ totale }} immagini totali</strong>,
+          <span class="badge bg-primary">{{ immagini|length }} campione mostrate</span>
+        </h5>
+        <div class="d-flex flex-wrap gap-3 mt-3">
+          {% for img in immagini %}
+            <div class="text-center">
+              <img src="{{ url_for('static', filename='screenshots/' + img) }}" class="rounded border" style="height: 100px;">
+              <div class="small mt-1 text-muted">{{ img }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-info">
+    ⚠️ Nessun cluster trovato o analisi non ancora eseguita.
+  </div>
+{% endif %}
+
+{% endblock %}
